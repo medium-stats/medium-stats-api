@@ -7,6 +7,13 @@ const port = process.env.PORT || 80;
 
 app.use(cors());
 
+app.use(function (req, res, next) {
+  req.setTimeout(300000, function () {
+    res.sendStatus(503);
+  });
+  next();
+});
+
 const MEDIUM = "https://medium.com";
 const JSON_PREFIX = "])}while(1);</x>";
 
@@ -19,7 +26,7 @@ app.get("/user", (req, res) => {
   return axios
     .get(`${MEDIUM}/@${username}?format=json`)
     .then((result) => res.send(cleanResponse(result.data).payload.user))
-    .catch((error) => console.error(error) && res.send(400));
+    .catch((error) => console.error(error) && res.sendStatus(400));
 });
 
 /* Get all data from a paginated endpoint */
